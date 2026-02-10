@@ -3,21 +3,44 @@ import Carbon
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    private var statusItem: NSStatusItem!
+    private var statusItem: NSStatusItem?
     private var hotkeyManager: HotkeyManager!
     private var enabledMenuItem: NSMenuItem!
     private var isEnabled = true
     private var settingsWindow: NSWindow?
 
+    private let hideIconKey = "hideMenuBarIcon"
+
+    var isMenuBarIconHidden: Bool {
+        get { UserDefaults.standard.bool(forKey: hideIconKey) }
+        set {
+            UserDefaults.standard.set(newValue, forKey: hideIconKey)
+            if newValue {
+                removeMenuBarIcon()
+            } else {
+                setupMenuBar()
+            }
+        }
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         requestAccessibilityPermission()
-        setupMenuBar()
+
+        if !UserDefaults.standard.bool(forKey: hideIconKey) {
+            setupMenuBar()
+        }
+
         hotkeyManager = HotkeyManager()
         hotkeyManager.register()
 
         if MappingStore.shared.isFirstLaunch {
             openSettings()
         }
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        openSettings()
+        return true
     }
 
     private func requestAccessibilityPermission() {
@@ -29,9 +52,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupMenuBar() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        if statusItem != nil { return }
 
-        if let button = statusItem.button {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+
+        if let button = item.button {
             if let image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Orchid Keyboard") {
                 image.isTemplate = true
                 button.image = image
@@ -44,7 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         enabledMenuItem = NSMenuItem(title: "Enabled", action: #selector(toggleEnabled), keyEquivalent: "")
         enabledMenuItem.target = self
-        enabledMenuItem.state = .on
+        enabledMenuItem.state = isEnabled ? .on : .off
         menu.addItem(enabledMenuItem)
 
         let settingsItem = NSMenuItem(title: "Settings...", action: #selector(openSettings), keyEquivalent: ",")
@@ -57,7 +82,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         quitItem.target = self
         menu.addItem(quitItem)
 
-        statusItem.menu = menu
+        item.menu = menu
+        statusItem = item
+    }
+
+    private func removeMenuBarIcon() {
+        if let item = statusItem {
+            NSStatusBar.system.removeStatusItem(item)
+            statusItem = nil
+        }
     }
 
     @objc private func toggleEnabled() {
@@ -71,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    @objc private func openSettings() {
+    @objc func openSettings() {
         if let window = settingsWindow {
             window.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)

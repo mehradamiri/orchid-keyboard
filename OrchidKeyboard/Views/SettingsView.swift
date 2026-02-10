@@ -4,6 +4,7 @@ struct SettingsView: View {
     @ObservedObject var store = MappingStore.shared
     @State private var selectedKeyID: String?
     @State private var showingSetupWizard = false
+    @State private var hideMenuBarIcon: Bool = UserDefaults.standard.bool(forKey: "hideMenuBarIcon")
 
     private var mappedKeyCount: Int {
         store.activeProfile.mappings.filter { m in
@@ -69,18 +70,40 @@ struct SettingsView: View {
             Divider()
 
             // Toolbar
-            HStack {
+            HStack(spacing: 12) {
                 Text("\(mappedKeyCount) keys mapped")
                     .font(.caption)
                     .foregroundColor(.secondary)
+
                 Spacer()
+
+                Toggle("Hide menu bar icon", isOn: $hideMenuBarIcon)
+                    .toggleStyle(.checkbox)
+                    .controlSize(.small)
+                    .onChange(of: hideMenuBarIcon) {
+                        if let appDelegate = NSApp.delegate as? AppDelegate {
+                            appDelegate.isMenuBarIconHidden = hideMenuBarIcon
+                        }
+                    }
+
                 Button("Clear All Mappings") {
                     store.clearAllMappings()
                     selectedKeyID = nil
                 }
                 .controlSize(.small)
+
                 Button("Setup Wizard") {
                     showingSetupWizard = true
+                }
+                .controlSize(.small)
+
+                Button {
+                    NSWorkspace.shared.open(URL(string: "https://buymeacoffee.com/orchidkeyboard")!)
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "cup.and.saucer.fill")
+                        Text("Donate")
+                    }
                 }
                 .controlSize(.small)
             }
