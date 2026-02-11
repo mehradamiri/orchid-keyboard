@@ -1,6 +1,7 @@
 import Cocoa
 import Carbon
 import SwiftUI
+import ServiceManagement
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
@@ -10,6 +11,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindow: NSWindow?
 
     private let hideIconKey = "hideMenuBarIcon"
+
+    var launchAtLogin: Bool {
+        get { SMAppService.mainApp.status == .enabled }
+        set {
+            do {
+                if newValue {
+                    try SMAppService.mainApp.register()
+                } else {
+                    try SMAppService.mainApp.unregister()
+                }
+            } catch {
+                NSLog("Orchid Keyboard: Failed to \(newValue ? "enable" : "disable") launch at login: \(error)")
+            }
+        }
+    }
 
     var isMenuBarIconHidden: Bool {
         get { UserDefaults.standard.bool(forKey: hideIconKey) }

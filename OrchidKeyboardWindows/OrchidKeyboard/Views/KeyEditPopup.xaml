@@ -1,0 +1,66 @@
+<Window x:Class="OrchidKeyboard.Views.KeyEditPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit Key"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="ToolWindow"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        KeyDown="OnKeyDown">
+    <Border Padding="16">
+        <StackPanel Width="260">
+            <!-- Title -->
+            <TextBlock x:Name="TitleText"
+                       FontSize="16" FontWeight="SemiBold"
+                       Margin="0,0,0,12" />
+
+            <!-- Fields -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="LowercaseLabel"
+                           Grid.Row="0" Grid.Column="0"
+                           FontSize="11" Foreground="Gray"
+                           Margin="0,0,0,4" />
+                <TextBox x:Name="LowercaseInput"
+                         Grid.Row="1" Grid.Column="0"
+                         FontSize="14" Padding="4" />
+
+                <TextBlock x:Name="UppercaseLabel"
+                           Grid.Row="0" Grid.Column="2"
+                           FontSize="11" Foreground="Gray"
+                           Margin="0,0,0,4" />
+                <TextBox x:Name="UppercaseInput"
+                         Grid.Row="1" Grid.Column="2"
+                         FontSize="14" Padding="4" />
+            </Grid>
+
+            <!-- Buttons -->
+            <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="Clear" Click="OnClear"
+                        Padding="12,6" />
+                <Button Grid.Column="2" Content="Cancel" Click="OnCancel"
+                        Padding="12,6" IsCancel="True" />
+                <Button Grid.Column="4" Content="Save" Click="OnSave"
+                        Padding="12,6" IsDefault="True" />
+            </Grid>
+        </StackPanel>
+    </Border>
+</Window>

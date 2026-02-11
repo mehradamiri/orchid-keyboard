@@ -33,7 +33,8 @@ swiftc \
     "$SRC_DIR/Views/KeyEditPopover.swift" \
     -framework Cocoa \
     -framework Carbon \
-    -framework SwiftUI
+    -framework SwiftUI \
+    -framework ServiceManagement
 
 # Copy Info.plist
 cp "$SRC_DIR/Info.plist" "$CONTENTS_DIR/Info.plist"

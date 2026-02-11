@@ -1,10 +1,12 @@
 import SwiftUI
+import ServiceManagement
 
 struct SettingsView: View {
     @ObservedObject var store = MappingStore.shared
     @State private var selectedKeyID: String?
     @State private var showingSetupWizard = false
     @State private var hideMenuBarIcon: Bool = UserDefaults.standard.bool(forKey: "hideMenuBarIcon")
+    @State private var launchAtLogin: Bool = SMAppService.mainApp.status == .enabled
 
     private var mappedKeyCount: Int {
         store.activeProfile.mappings.filter { m in
@@ -76,6 +78,15 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
 
                 Spacer()
+
+                Toggle("Launch at login", isOn: $launchAtLogin)
+                    .toggleStyle(.checkbox)
+                    .controlSize(.small)
+                    .onChange(of: launchAtLogin) {
+                        if let appDelegate = NSApp.delegate as? AppDelegate {
+                            appDelegate.launchAtLogin = launchAtLogin
+                        }
+                    }
 
                 Toggle("Hide menu bar icon", isOn: $hideMenuBarIcon)
                     .toggleStyle(.checkbox)
