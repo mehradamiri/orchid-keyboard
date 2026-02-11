@@ -7,7 +7,11 @@ private func hotkeyCallback(
     event: EventRef?,
     userData: UnsafeMutableRawPointer?
 ) -> OSStatus {
-    TextReplacer.replaceSelectedText()
+    // Dispatch off the main thread so the run loop stays free
+    // to process the simulated key events (Cmd+C / Cmd+V)
+    DispatchQueue.global(qos: .userInitiated).async {
+        TextReplacer.replaceSelectedText()
+    }
     return noErr
 }
 
