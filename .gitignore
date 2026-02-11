@@ -6,6 +6,7 @@
 
 # Build
 build/
+create-dmg.sh
 
 # Claude Code
 .claude/settings.local.json

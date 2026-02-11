@@ -32,11 +32,13 @@ struct MappingProfile: Codable, Identifiable {
     func reverseLookup() -> [String: String] {
         var dict = [String: String]()
         for m in mappings {
-            if !m.lowercase.source.isEmpty && !m.lowercase.target.isEmpty {
-                dict[m.lowercase.target] = m.lowercase.source
-            }
+            // Process uppercase first so lowercase takes priority when
+            // both map to the same target (e.g. scripts without case distinction).
             if !m.uppercase.source.isEmpty && !m.uppercase.target.isEmpty {
                 dict[m.uppercase.target] = m.uppercase.source
+            }
+            if !m.lowercase.source.isEmpty && !m.lowercase.target.isEmpty {
+                dict[m.lowercase.target] = m.lowercase.source
             }
         }
         return dict
